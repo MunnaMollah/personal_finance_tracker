@@ -1,0 +1,331 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_TRANSACTIONS 100
+#define MAX_CATEGORIES 10
+#define MAX_GOALS 5
+
+typedef struct {
+    char type[10];
+    char category[20];
+    float amount;
+} Transaction;
+
+typedef struct {
+    char name[20];
+    float amount;
+} Budget;
+
+typedef struct {
+    char goalName[20];
+    float goalAmount;
+    float savedAmount;
+} Goal;
+
+Transaction transactions[MAX_TRANSACTIONS];
+Budget budgets[MAX_CATEGORIES];
+Goal goals[MAX_GOALS];
+
+int transactionCount = 0;
+int budgetCount = 0;
+int goalCount = 0;
+
+void initializeSecurity();
+void printMainMenu();
+void manageTransactions();
+void addTransaction();
+void deleteTransaction();
+void viewTransactions();
+void setBudget();
+void viewBudget();
+void setGoals();
+void viewGoals();
+void generateReports();
+void generateReport();
+void viewReport();
+
+void clearInputBuffer();
+
+int main() {
+    initializeSecurity();
+    int choice;
+    while (1) {
+        printMainMenu();
+        scanf("%d", &choice);
+        clearInputBuffer();
+
+        switch (choice) {
+            case 1:
+                manageTransactions();
+                break;
+            case 2:
+                setBudget();
+                break;
+            case 3:
+                setGoals();
+                break;
+            case 4:
+                generateReports();
+                break;
+            case 5:
+                printf("Exiting...\n");
+                return 0;
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    }
+    return 0;
+}
+
+void clearInputBuffer() {
+    while (getchar() != '\n');
+}
+
+void initializeSecurity() {
+    printf("\n******************************************\n");
+    printf("*         Initializing Security          *\n");
+    printf("******************************************\n");
+}
+
+void printMainMenu() {
+    printf("\n******************************************\n");
+    printf("*         Personal Finance Tracker       *\n");
+    printf("******************************************\n");
+    printf("* 1. Manage Transactions                 *\n");
+    printf("* 2. Set Budget                          *\n");
+    printf("* 3. Set Financial Goals                 *\n");
+    printf("* 4. Generate Reports                    *\n");
+    printf("* 5. Exit                                *\n");
+    printf("******************************************\n");
+    printf("Enter your choice: ");
+}
+
+void printTransactionMenu() {
+    printf("\n******************************************\n");
+    printf("*          Manage Transactions           *\n");
+    printf("******************************************\n");
+    printf("* 1. Add Transaction                     *\n");
+    printf("* 2. Delete Transaction                  *\n");
+    printf("* 3. View Transactions                   *\n");
+    printf("* 4. Back to Main Menu                   *\n");
+    printf("******************************************\n");
+    printf("Enter your choice: ");
+}
+
+void manageTransactions() {
+    int choice;
+    int backToMainMenu = 0;
+    while (!backToMainMenu) {
+        printTransactionMenu();
+        scanf("%d", &choice);
+        clearInputBuffer();
+
+        switch (choice) {
+            case 1:
+                addTransaction();
+                break;
+            case 2:
+                deleteTransaction();
+                break;
+            case 3:
+                viewTransactions();
+                break;
+            case 4:
+                backToMainMenu = 1;
+                break;
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    }
+}
+
+void addTransaction() {
+    if (transactionCount >= MAX_TRANSACTIONS) {
+        printf("Transaction limit reached!\n");
+        return;
+    }
+
+    printf("Enter transaction type (income/expense): ");
+    scanf("%s", transactions[transactionCount].type);
+    printf("Enter category: ");
+    scanf("%s", transactions[transactionCount].category);
+    printf("Enter amount: ");
+    scanf("%f", &transactions[transactionCount].amount);
+    transactionCount++;
+}
+
+void deleteTransaction() {
+    if (transactionCount == 0) {
+        printf("No transactions to delete!\n");
+        return;
+    }
+
+    int index;
+    printf("Enter the transaction index to delete (0 to %d): ", transactionCount - 1);
+    scanf("%d", &index);
+    if (index < 0 || index >= transactionCount) {
+        printf("Invalid index!\n");
+        return;
+    }
+
+    for (int i = index; i < transactionCount - 1; i++) {
+        transactions[i] = transactions[i + 1];
+    }
+    transactionCount--;
+    printf("Transaction deleted.\n");
+}
+
+void viewTransactions() {
+    printf("\n--- Transactions ---\n");
+    for (int i = 0; i < transactionCount; i++) {
+        printf("Index: %d, Type: %s, Category: %s, Amount: %.2f\n", i, transactions[i].type, transactions[i].category, transactions[i].amount);
+    }
+}
+
+void printBudgetMenu() {
+    printf("\n******************************************\n");
+    printf("*              Set Budget                *\n");
+    printf("******************************************\n");
+    printf("* 1. Set Budget                          *\n");
+    printf("* 2. View Budget                         *\n");
+    printf("* 3. Back to Main Menu                   *\n");
+    printf("******************************************\n");
+    printf("Enter your choice: ");
+}
+
+void setBudget() {
+    if (budgetCount >= MAX_CATEGORIES) {
+        printf("Budget limit reached!\n");
+        return;
+    }
+
+    printf("Enter budget category: ");
+    scanf("%s", budgets[budgetCount].name);
+    printf("Enter budget amount: ");
+    scanf("%f", &budgets[budgetCount].amount);
+    budgetCount++;
+}
+
+void viewBudget() {
+    printf("\n--- Budgets ---\n");
+    for (int i = 0; i < budgetCount; i++) {
+        printf("Category: %s, Amount: %.2f\n", budgets[i].name, budgets[i].amount);
+    }
+}
+
+void printGoalMenu() {
+    printf("\n******************************************\n");
+    printf("*         Set Financial Goals            *\n");
+    printf("******************************************\n");
+    printf("* 1. Set Goals                           *\n");
+    printf("* 2. View Goals                          *\n");
+    printf("* 3. Back to Main Menu                   *\n");
+    printf("******************************************\n");
+    printf("Enter your choice: ");
+}
+
+void setGoals() {
+    if (goalCount >= MAX_GOALS) {
+        printf("Goal limit reached!\n");
+        return;
+    }
+
+    printf("Enter goal name: ");
+    scanf("%s", goals[goalCount].goalName);
+    printf("Enter goal amount: ");
+    scanf("%f", &goals[goalCount].goalAmount);
+    goals[goalCount].savedAmount = 0; // Initialize saved amount to 0
+    goalCount++;
+}
+
+void viewGoals() {
+    printf("\n--- Goals ---\n");
+    for (int i = 0; i < goalCount; i++) {
+        printf("Goal: %s, Goal Amount: %.2f, Saved Amount: %.2f\n", goals[i].goalName, goals[i].goalAmount, goals[i].savedAmount);
+    }
+}
+
+void printReportMenu() {
+    printf("\n******************************************\n");
+    printf("*          Generate Reports              *\n");
+    printf("******************************************\n");
+    printf("* 1. Generate Reports                    *\n");
+    printf("* 2. View Report                         *\n");
+    printf("* 3. Back to Main Menu                   *\n");
+    printf("******************************************\n");
+    printf("Enter your choice: ");
+}
+
+void generateReports() {
+    int choice;
+    int backToMainMenu = 0;
+    while (!backToMainMenu) {
+        printReportMenu();
+        scanf("%d", &choice);
+        clearInputBuffer();
+
+        switch (choice) {
+            case 1:
+                generateReport();
+                break;
+            case 2:
+                viewReport();
+                break;
+            case 3:
+                backToMainMenu = 1;
+                break;
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    }
+}
+
+void generateReport() {
+    float totalIncome = 0, totalExpense = 0;
+
+    for (int i = 0; i < transactionCount; i++) {
+        if (strcmp(transactions[i].type, "income") == 0) {
+            totalIncome += transactions[i].amount;
+        } else if (strcmp(transactions[i].type, "expense") == 0) {
+            totalExpense += transactions[i].amount;
+        }
+    }
+
+    float netSavings = totalIncome - totalExpense;
+
+    printf("\n--- Financial Report ---\n");
+    printf("Total Income: $%.2f\n", totalIncome);
+    printf("Total Expense: $%.2f\n", totalExpense);
+    printf("Net Savings: $%.2f\n", netSavings);
+
+    printf("\n--- Income Transactions ---\n");
+    for (int i = 0; i < transactionCount; i++) {
+        if (strcmp(transactions[i].type, "income") == 0) {
+            printf("Category: %s, Amount: $%.2f\n", transactions[i].category, transactions[i].amount);
+        }
+    }
+
+    printf("\n--- Expense Transactions ---\n");
+    for (int i = 0; i < transactionCount; i++) {
+        if (strcmp(transactions[i].type, "expense") == 0) {
+            printf("Category: %s, Amount: $%.2f\n", transactions[i].category, transactions[i].amount);
+        }
+    }
+
+    printf("\n--- Budgets ---\n");
+    for (int i = 0; i < budgetCount; i++) {
+        printf("Category: %s, Amount: $%.2f\n", budgets[i].name, budgets[i].amount);
+    }
+
+    printf("\n--- Goals ---\n");
+    for (int i = 0; i < goalCount; i++) {
+        printf("Goal: %s, Goal Amount: $%.2f, Saved Amount: $%.2f\n", goals[i].goalName, goals[i].goalAmount, goals[i].savedAmount);
+    }
+
+    printf("\nTotal Remaining Amount: $%.2f\n", netSavings);
+}
+
+void viewReport() {
+    generateReport();
+}
